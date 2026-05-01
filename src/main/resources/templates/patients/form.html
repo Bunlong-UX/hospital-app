@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Form - Hospital MS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .sidebar { width: 250px; min-height: 100vh; background: #1a2035; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar-brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); color: white; font-weight: 700; font-size: 1.1rem; }
+        .sidebar-brand span { color: #4da3ff; }
+        .sidebar nav { padding: 1rem 0; }
+        .sidebar a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; color: #c8cfe8; text-decoration: none; transition: all 0.2s; font-size: 0.92rem; }
+        .sidebar a:hover { background: #2d3654; color: white; }
+        .sidebar a.active { background: #0d6efd; color: white; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .sidebar a i { font-size: 1.1rem; width: 20px; }
+        .sidebar-section { padding: 0.5rem 1.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6385; margin-top: 0.5rem; }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .topbar { background: white; padding: 1rem 2rem; margin: -2rem -2rem 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 1rem; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .card-header { background: white; border-bottom: 1px solid #f0f2f5; font-weight: 600; border-radius: 12px 12px 0 0 !important; padding: 1rem 1.5rem; }
+        .form-label { font-weight: 500; font-size: 0.88rem; color: #495057; }
+        .form-control:focus, .form-select:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.12); }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-brand">🏥 <span>Hospital</span> MS</div>
+    <nav>
+        <a href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <div class="sidebar-section">Management</div>
+        <a href="/patients" class="active"><i class="bi bi-people"></i> Patients</a>
+        <a href="/doctors"><i class="bi bi-person-badge"></i> Doctors</a>
+        <a href="/appointments"><i class="bi bi-calendar-check"></i> Appointments</a>
+        <a href="/billings"><i class="bi bi-receipt"></i> Billing</a>
+        <a href="/inventory"><i class="bi bi-box-seam"></i> Inventory</a>
+        <div class="sidebar-section">Reports</div>
+        <a href="/appointments/by-patient?patientId="><i class="bi bi-person-lines-fill"></i> Appt by Patient</a>
+        <a href="/appointments/by-doctor?doctorId="><i class="bi bi-stethoscope"></i> Appt by Doctor</a>
+        <a href="/billings/by-patient?patientId="><i class="bi bi-cash-stack"></i> Billing History</a>
+        <a href="/billings/unpaid"><i class="bi bi-exclamation-circle"></i> Unpaid Bills</a>
+        <a href="/inventory/near-expiration"><i class="bi bi-clock-history"></i> Near Expiration</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <a href="/patients" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i></a>
+        <h5 class="mb-0 fw-bold" th:text="${patient.id != null} ? 'Edit Patient' : 'Register New Patient'">Patient Form</h5>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-fill me-2 text-primary"></i>
+                    <span th:text="${patient.id != null} ? 'Update Patient Information' : 'Patient Registration Form'">Form</span>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="${patient.id != null} ? @{/patients/{id}(id=${patient.id})} : @{/patients}"
+                          th:object="${patient}" method="post">
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" th:field="*{firstName}" placeholder="Enter first name">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" th:field="*{lastName}" placeholder="Enter last name">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" th:field="*{dob}">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('dob')}" th:errors="*{dob}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" th:field="*{gender}">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" th:field="*{address}" rows="2" placeholder="Enter full address"></textarea>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" th:field="*{phone}" placeholder="+855 xx xxx xxx">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Insurance Info</label>
+                                <input type="text" class="form-control" th:field="*{insuranceInfo}" placeholder="Insurance provider / policy no.">
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="/patients" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-lg me-1"></i>
+                                <span th:text="${patient.id != null} ? 'Update Patient' : 'Register Patient'">Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

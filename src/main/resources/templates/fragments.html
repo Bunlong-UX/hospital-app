@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Hospital Management System'">Hospital Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --sidebar-bg: #1a2035;
+            --sidebar-text: #c8cfe8;
+            --sidebar-hover: #2d3654;
+            --sidebar-active: #0d6efd;
+        }
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .sidebar {
+            width: 250px; min-height: 100vh; background: var(--sidebar-bg);
+            position: fixed; top: 0; left: 0; z-index: 100;
+            display: flex; flex-direction: column;
+        }
+        .sidebar-brand {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            color: white; font-weight: 700; font-size: 1.1rem;
+        }
+        .sidebar-brand span { color: #4da3ff; }
+        .sidebar nav { padding: 1rem 0; flex: 1; }
+        .sidebar a {
+            display: flex; align-items: center; gap: 0.75rem;
+            padding: 0.75rem 1.25rem; color: var(--sidebar-text);
+            text-decoration: none; transition: all 0.2s;
+            font-size: 0.92rem;
+        }
+        .sidebar a:hover { background: var(--sidebar-hover); color: white; }
+        .sidebar a.active { background: var(--sidebar-active); color: white; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .sidebar a i { font-size: 1.1rem; width: 20px; }
+        .sidebar-section { padding: 0.5rem 1.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6385; margin-top: 0.5rem; }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .topbar { background: white; padding: 1rem 2rem; margin: -2rem -2rem 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+        .topbar h5 { margin: 0; font-weight: 600; color: #1a2035; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .card-header { background: white; border-bottom: 1px solid #f0f2f5; font-weight: 600; border-radius: 12px 12px 0 0 !important; }
+        .btn-primary { background: var(--primary); border-color: var(--primary); }
+        .table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d; font-weight: 600; }
+        .badge { font-size: 0.78rem; }
+    </style>
+    <th:block th:fragment="extraHead"></th:block>
+</head>
+<body>
+    <div class="sidebar" th:fragment="sidebar">
+        <div class="sidebar-brand">🏥 <span>Hospital</span> MS</div>
+        <nav>
+            <a th:href="@{/}" th:classappend="${activePage == 'dashboard'} ? 'active'"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            <div class="sidebar-section">Management</div>
+            <a th:href="@{/patients}" th:classappend="${activePage == 'patients'} ? 'active'"><i class="bi bi-people"></i> Patients</a>
+            <a th:href="@{/doctors}" th:classappend="${activePage == 'doctors'} ? 'active'"><i class="bi bi-person-badge"></i> Doctors</a>
+            <a th:href="@{/appointments}" th:classappend="${activePage == 'appointments'} ? 'active'"><i class="bi bi-calendar-check"></i> Appointments</a>
+            <a th:href="@{/billings}" th:classappend="${activePage == 'billings'} ? 'active'"><i class="bi bi-receipt"></i> Billing</a>
+            <a th:href="@{/inventory}" th:classappend="${activePage == 'inventory'} ? 'active'"><i class="bi bi-box-seam"></i> Inventory</a>
+            <div class="sidebar-section">Reports</div>
+            <a th:href="@{/appointments/by-patient(patientId='')}"><i class="bi bi-person-lines-fill"></i> Appt by Patient</a>
+            <a th:href="@{/appointments/by-doctor(doctorId='')}"><i class="bi bi-stethoscope"></i> Appt by Doctor</a>
+            <a th:href="@{/billings/by-patient(patientId='')}"><i class="bi bi-cash-stack"></i> Billing History</a>
+            <a th:href="@{/billings/unpaid}"><i class="bi bi-exclamation-circle"></i> Unpaid Bills</a>
+            <a th:href="@{/inventory/near-expiration}"><i class="bi bi-clock-history"></i> Near Expiration</a>
+        </nav>
+    </div>
+</body>
+</html>

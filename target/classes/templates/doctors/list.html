@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctors - Hospital MS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .sidebar { width: 250px; min-height: 100vh; background: #1a2035; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar-brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); color: white; font-weight: 700; font-size: 1.1rem; }
+        .sidebar-brand span { color: #4da3ff; }
+        .sidebar nav { padding: 1rem 0; }
+        .sidebar a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; color: #c8cfe8; text-decoration: none; transition: all 0.2s; font-size: 0.92rem; }
+        .sidebar a:hover { background: #2d3654; color: white; }
+        .sidebar a.active { background: #198754; color: white; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .sidebar a i { font-size: 1.1rem; width: 20px; }
+        .sidebar-section { padding: 0.5rem 1.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6385; margin-top: 0.5rem; }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .topbar { background: white; padding: 1rem 2rem; margin: -2rem -2rem 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: space-between; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .card-header { background: white; border-bottom: 1px solid #f0f2f5; font-weight: 600; border-radius: 12px 12px 0 0 !important; padding: 1rem 1.5rem; }
+        .table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d; font-weight: 600; }
+        .table td { vertical-align: middle; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+        .spec-badge { background: #e8f5e9; color: #2e7d32; padding: 0.25rem 0.6rem; border-radius: 20px; font-size: 0.78rem; font-weight: 500; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-brand">🏥 <span>Hospital</span> MS</div>
+    <nav>
+        <a href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <div class="sidebar-section">Management</div>
+        <a href="/patients"><i class="bi bi-people"></i> Patients</a>
+        <a href="/doctors" class="active"><i class="bi bi-person-badge"></i> Doctors</a>
+        <a href="/appointments"><i class="bi bi-calendar-check"></i> Appointments</a>
+        <a href="/billings"><i class="bi bi-receipt"></i> Billing</a>
+        <a href="/inventory"><i class="bi bi-box-seam"></i> Inventory</a>
+        <div class="sidebar-section">Reports</div>
+        <a href="/appointments/by-patient?patientId="><i class="bi bi-person-lines-fill"></i> Appt by Patient</a>
+        <a href="/appointments/by-doctor?doctorId="><i class="bi bi-stethoscope"></i> Appt by Doctor</a>
+        <a href="/billings/by-patient?patientId="><i class="bi bi-cash-stack"></i> Billing History</a>
+        <a href="/billings/unpaid"><i class="bi bi-exclamation-circle"></i> Unpaid Bills</a>
+        <a href="/inventory/near-expiration"><i class="bi bi-clock-history"></i> Near Expiration</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <h5 class="mb-0 fw-bold">Doctors</h5>
+        <a href="/doctors/new" class="btn btn-success btn-sm"><i class="bi bi-plus-circle me-1"></i> Add Doctor</a>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>All Doctors</span>
+            <span class="badge bg-success rounded-pill" th:text="${doctors.size()} + ' doctors'">0</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Specialization</th>
+                        <th>Schedule</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${doctors.empty}">
+                        <td colspan="4" class="text-center text-muted py-5">No doctors registered yet.</td>
+                    </tr>
+                    <tr th:each="d : ${doctors}">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar bg-success bg-opacity-10 text-success"
+                                     th:text="${#strings.substring(d.firstName,0,1) + #strings.substring(d.lastName,0,1)}">DR</div>
+                                <div>
+                                    <div class="fw-semibold" th:text="'Dr. ' + ${d.firstName} + ' ' + ${d.lastName}">Name</div>
+                                    <small class="text-muted" th:text="${d.id}">ID</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="spec-badge" th:text="${d.specialization}">-</span></td>
+                        <td th:text="${d.schedule}">-</td>
+                        <td>
+                            <a th:href="@{/doctors/{id}/edit(id=${d.id})}" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/doctors/{id}/delete(id=${d.id})}" class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Delete this doctor?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

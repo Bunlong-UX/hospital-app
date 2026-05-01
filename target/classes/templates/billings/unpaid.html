@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Unpaid Bills - Hospital MS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .sidebar { width: 250px; min-height: 100vh; background: #1a2035; position: fixed; top: 0; left: 0; z-index: 100; }
+        .sidebar-brand { padding: 1.5rem 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); color: white; font-weight: 700; font-size: 1.1rem; }
+        .sidebar-brand span { color: #4da3ff; }
+        .sidebar nav { padding: 1rem 0; }
+        .sidebar a { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1.25rem; color: #c8cfe8; text-decoration: none; transition: all 0.2s; font-size: 0.92rem; }
+        .sidebar a:hover { background: #2d3654; color: white; }
+        .sidebar a.active { background: #dc3545; color: white; border-radius: 0 8px 8px 0; margin-right: 12px; }
+        .sidebar a i { font-size: 1.1rem; width: 20px; }
+        .sidebar-section { padding: 0.5rem 1.25rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #5a6385; margin-top: 0.5rem; }
+        .main-content { margin-left: 250px; padding: 2rem; }
+        .topbar { background: white; padding: 1rem 2rem; margin: -2rem -2rem 2rem; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+        .card { border: none; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+        .card-header { background: white; border-bottom: 1px solid #f0f2f5; font-weight: 600; border-radius: 12px 12px 0 0 !important; padding: 1rem 1.5rem; }
+        .table th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6c757d; font-weight: 600; }
+        .table td { vertical-align: middle; }
+        .alert-banner { background: #fff5f5; border: 1px solid #fecdd3; border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="sidebar-brand">🏥 <span>Hospital</span> MS</div>
+    <nav>
+        <a href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <div class="sidebar-section">Management</div>
+        <a href="/patients"><i class="bi bi-people"></i> Patients</a>
+        <a href="/doctors"><i class="bi bi-person-badge"></i> Doctors</a>
+        <a href="/appointments"><i class="bi bi-calendar-check"></i> Appointments</a>
+        <a href="/billings"><i class="bi bi-receipt"></i> Billing</a>
+        <a href="/inventory"><i class="bi bi-box-seam"></i> Inventory</a>
+        <div class="sidebar-section">Reports</div>
+        <a href="/appointments/by-patient?patientId="><i class="bi bi-person-lines-fill"></i> Appt by Patient</a>
+        <a href="/appointments/by-doctor?doctorId="><i class="bi bi-stethoscope"></i> Appt by Doctor</a>
+        <a href="/billings/by-patient?patientId="><i class="bi bi-cash-stack"></i> Billing History</a>
+        <a href="/billings/unpaid" class="active"><i class="bi bi-exclamation-circle"></i> Unpaid Bills</a>
+        <a href="/inventory/near-expiration"><i class="bi bi-clock-history"></i> Near Expiration</a>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="topbar">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-circle-fill me-2 text-danger"></i>Unpaid Billing Records</h5>
+    </div>
+
+    <div class="alert-banner d-flex align-items-center gap-3" th:if="${!billings.empty}">
+        <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+        <div>
+            <div class="fw-semibold text-danger">Action Required</div>
+            <small class="text-muted" th:text="${billings.size()} + ' unpaid bill(s) require follow-up.'">-</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Unpaid Bills</span>
+            <span class="badge bg-danger rounded-pill" th:text="${billings.size()} + ' unpaid'">0</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Patient</th>
+                        <th>Amount Due</th>
+                        <th>Billing Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${billings.empty}">
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <i class="bi bi-check-circle text-success fs-2 d-block mb-2"></i>
+                            All bills are paid!
+                        </td>
+                    </tr>
+                    <tr th:each="b : ${billings}">
+                        <td class="fw-semibold" th:text="${b.patientName}">-</td>
+                        <td><span class="fw-bold text-danger" th:text="'$' + ${#numbers.formatDecimal(b.amount, 1, 2)}">$0.00</span></td>
+                        <td th:text="${b.billingDate}">-</td>
+                        <td>
+                            <a th:href="@{/billings/{id}/edit(id=${b.id})}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil me-1"></i> Mark Paid
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
